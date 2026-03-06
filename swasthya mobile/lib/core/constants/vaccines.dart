@@ -1,0 +1,17 @@
+const List<String> COMMON_VACCINES = [
+  'BCG',
+  'Hepatitis B',
+  'OPV (Polio)',
+  'DPT',
+  'Hib',
+  'PCV',
+  'Rotavirus',
+  'MMR',
+  'Varicella',
+  'Hepatitis A',
+  'Typhoid',
+  'HPV',
+  'Influenza',
+  'COVID-19',
+  'Tetanus (Td)',
+];

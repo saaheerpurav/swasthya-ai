@@ -1,0 +1,9 @@
+# Root
+.env
+.env.*
+!.env.example
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

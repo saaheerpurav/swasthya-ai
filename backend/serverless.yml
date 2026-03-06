@@ -1,0 +1,204 @@
+service: swasthyaai-backend
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 512
+  timeout: 29
+  logRetentionInDays: 14
+  httpApi:
+    cors:
+      allowedOrigins: '*'
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Api-Key
+        - X-Admin-Key
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      maxAge: 300
+
+  environment:
+    NODE_ENV: ${self:provider.stage}
+
+    # ── Secrets (from SSM) ────────────────────────────────────────────────────
+    JWT_SECRET: ${ssm:/swasthyaai/${self:provider.stage}/jwt-secret}
+    ADMIN_API_KEY: ${ssm:/swasthyaai/${self:provider.stage}/admin-api-key}
+    OPENAI_API_KEY: ${ssm:/swasthyaai/${self:provider.stage}/openai-api-key}
+    OPENAI_MODEL: gpt-4o-mini
+    TWILIO_ACCOUNT_SID: ${ssm:/swasthyaai/${self:provider.stage}/twilio-account-sid}
+    TWILIO_AUTH_TOKEN: ${ssm:/swasthyaai/${self:provider.stage}/twilio-auth-token}
+    TWILIO_WHATSAPP_NUMBER: ${ssm:/swasthyaai/${self:provider.stage}/twilio-whatsapp-from}
+    TWILIO_SMS_NUMBER: ${ssm:/swasthyaai/${self:provider.stage}/twilio-sms-from}
+
+    # ── DynamoDB (tables already exist in ap-south-1) ─────────────────────────
+    DYNAMODB_REGION: ap-south-1
+    DYNAMODB_SESSIONS_TABLE: swasthyaai-sessions
+    DYNAMODB_USERS_TABLE: swasthyaai-users
+    DYNAMODB_QUERIES_TABLE: swasthyaai-queries
+    DYNAMODB_FACILITIES_TABLE: swasthyaai-facilities
+    DYNAMODB_ALERTS_TABLE: swasthyaai-alerts
+    DYNAMODB_OUTBREAKS_TABLE: swasthyaai-outbreaks
+    DYNAMODB_VAX_PROFILES_TABLE: swasthyaai-vax-profiles
+    DYNAMODB_VAX_DRIVES_TABLE: swasthyaai-vax-drives
+    DYNAMODB_NEWS_TABLE: swasthyaai-news
+
+    # ── S3 (buckets already exist in ap-south-1) ──────────────────────────────
+    S3_REGION: ap-south-1
+    S3_KNOWLEDGE_BUCKET: swasthyaai-knowledge
+    S3_USERDATA_BUCKET: swasthyaai-userdata
+
+    # ── AWS service regions ───────────────────────────────────────────────────
+    TRANSCRIBE_REGION: ap-south-1
+    POLLY_REGION: ap-south-1
+    REKOGNITION_REGION: ap-south-1
+    SNS_REGION: ap-south-1
+    SNS_ADMIN_TOPIC_ARN: arn:aws:sns:ap-south-1:610175138632:swasthyaai-admin-alerts
+
+    # ── CORS ─────────────────────────────────────────────────────────────────
+    WEB_ORIGIN: ${self:custom.webOrigin.${self:provider.stage}, ''}
+
+  iam:
+    role:
+      statements:
+        # DynamoDB — existing tables
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-sessions
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-users
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-users/index/*
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-queries
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-queries/index/*
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-facilities
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-facilities/index/*
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-alerts
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-alerts/index/*
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-outbreaks
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-vax-profiles
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-vax-drives
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-vax-drives/index/*
+            - arn:aws:dynamodb:ap-south-1:610175138632:table/swasthyaai-news
+        # S3 — existing buckets
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - arn:aws:s3:::swasthyaai-userdata/*
+            - arn:aws:s3:::swasthyaai-knowledge/*
+        # Transcribe
+        - Effect: Allow
+          Action:
+            - transcribe:StartTranscriptionJob
+            - transcribe:GetTranscriptionJob
+            - transcribe:DeleteTranscriptionJob
+          Resource: '*'
+        # Polly
+        - Effect: Allow
+          Action:
+            - polly:SynthesizeSpeech
+          Resource: '*'
+        # Rekognition
+        - Effect: Allow
+          Action:
+            - rekognition:DetectLabels
+            - rekognition:DetectModerationLabels
+          Resource: '*'
+        # SNS — existing topic
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource: arn:aws:sns:ap-south-1:610175138632:swasthyaai-admin-alerts
+        # SSM — read secrets
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+          Resource:
+            - arn:aws:ssm:ap-south-1:610175138632:parameter/swasthyaai/${self:provider.stage}/*
+
+custom:
+  webOrigin:
+    dev: 'http://localhost:5173'
+    staging: 'https://staging.swasthya-ai.in'
+    prod: 'https://swasthya-ai.in'
+
+# ─── Functions ─────────────────────────────────────────────────────────────────
+
+functions:
+
+  # ── HTTP API ──────────────────────────────────────────────────────────────────
+  api:
+    handler: src/lambda.handler
+    description: SwasthyaAI HTTP API (Express via API Gateway)
+    memorySize: 1024
+    events:
+      - httpApi:
+          path: /health
+          method: GET
+      - httpApi:
+          path: /v1/{proxy+}
+          method: ANY
+
+  # ── Scheduled Jobs ────────────────────────────────────────────────────────────
+  updateHealthData:
+    handler: src/lambda.handler
+    description: Daily — update knowledge base from WHO/MoHFW feeds
+    timeout: 300
+    memorySize: 1024
+    events:
+      - schedule:
+          name: swasthyaai-update-health-data-${self:provider.stage}
+          description: Daily 02:00 UTC — update WHO/MoHFW knowledge base
+          rate: cron(0 2 * * ? *)
+          enabled: true
+
+  vaccinationReminders:
+    handler: src/lambda.handler
+    description: Daily — send vaccination due-date reminders
+    timeout: 120
+    events:
+      - schedule:
+          name: swasthyaai-vaccination-reminders-${self:provider.stage}
+          description: Daily 02:30 UTC (08:00 IST) — vaccination reminders
+          rate: cron(30 2 * * ? *)
+          enabled: true
+
+  expireAlerts:
+    handler: src/lambda.handler
+    description: Hourly — expire stale health alerts
+    timeout: 30
+    events:
+      - schedule:
+          name: swasthyaai-expire-alerts-${self:provider.stage}
+          description: Every hour — expire stale alerts
+          rate: rate(1 hour)
+          enabled: true
+
+  weeklyReport:
+    handler: src/lambda.handler
+    description: Weekly — generate and publish analytics report via SNS
+    timeout: 60
+    events:
+      - schedule:
+          name: swasthyaai-weekly-report-${self:provider.stage}
+          description: Every Monday 06:00 UTC — weekly analytics report
+          rate: cron(0 6 ? * MON *)
+          enabled: true
+
+# No resources block — all DynamoDB tables, S3 buckets, and SNS topic
+# already exist in ap-south-1 and are referenced directly above.

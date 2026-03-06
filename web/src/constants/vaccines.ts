@@ -1,0 +1,21 @@
+export const COMMON_VACCINES = [
+  'BCG',
+  'Hepatitis B',
+  'OPV (Oral Polio)',
+  'DPT',
+  'Hib',
+  'IPV',
+  'Rotavirus',
+  'PCV',
+  'MMR',
+  'Typhoid',
+  'Hepatitis A',
+  'Varicella',
+  'COVID-19 (Covishield)',
+  'COVID-19 (Covaxin)',
+  'Influenza',
+  'Vitamin A',
+  'HPV',
+  'Meningococcal',
+] as const
+
