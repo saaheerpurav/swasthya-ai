@@ -10,34 +10,34 @@ const stats = [
 
 const features = [
   {
-    tag: 'RAG Verified',
-    title: 'Zero hallucinations.',
-    body: 'Every response grounded in WHO and MoHFW documents. No inference without source.',
+    tag: 'Knowledge Grounded',
+    title: 'WHO & MoHFW sources.',
+    body: 'Every response grounded in verified health knowledge from WHO and MoHFW. Disclaimers on every reply.',
   },
   {
-    tag: 'Multilingual NLU',
+    tag: 'Multilingual AI',
     title: 'Medical vocabulary. Four languages.',
-    body: 'Amazon Lex v2 understands intent in Hindi, Kannada, Telugu, and English natively.',
+    body: 'OpenAI understands and responds in Hindi, Kannada, Telugu, and English — auto-detected from input.',
   },
   {
     tag: 'Emergency Detection',
     title: 'Critical symptoms. <10 seconds.',
-    body: 'Comprehend Medical flags emergency patterns. Escalation triggers immediately.',
+    body: 'Keyword-based emergency screening flags critical patterns. Escalation to 108 triggers immediately.',
   },
   {
-    tag: 'Agentic Workflow',
-    title: 'Vaccine slot. <2 minutes.',
-    body: 'Step Functions coordinates booking, confirmation, and reminder — end to end.',
+    tag: 'Voice + Vision',
+    title: 'Speak or show. System understands.',
+    body: 'Amazon Transcribe converts speech to text. Amazon Rekognition analyses images for health education.',
   },
   {
-    tag: 'Geospatial',
-    title: 'Nearest facility. 50ms.',
-    body: 'PostGIS proximity search covers hospitals, PHCs, pharmacies, and clinics.',
+    tag: 'Nearby Hospitals',
+    title: 'Nearest facility. Instantly.',
+    body: 'Google Maps + Places API in the Flutter app finds hospitals, PHCs, and clinics near you in real time.',
   },
   {
     tag: 'Outbreak Monitoring',
-    title: 'Daily 6AM alerts.',
-    body: 'IMD weather patterns correlated with disease data. Proactive, not reactive.',
+    title: 'Live disease alerts.',
+    body: 'Active outbreak data and vaccination drive tracker visible on the public health dashboard.',
   },
 ]
 
@@ -50,9 +50,9 @@ const channels = [
 ]
 
 const stack = [
-  'Amazon Bedrock', 'AWS Lambda', 'DynamoDB', 'Amazon Lex',
-  'Transcribe', 'Comprehend Medical', 'Amazon Polly',
-  'Step Functions', 'Twilio', 'Flutter',
+  'OpenAI', 'AWS Lambda', 'DynamoDB', 'Amazon Transcribe',
+  'Amazon Polly', 'Amazon Rekognition', 'S3',
+  'API Gateway', 'CloudFront', 'Twilio', 'Flutter',
 ]
 
 export default function LandingPage() {
@@ -223,7 +223,7 @@ export default function LandingPage() {
               {
                 step: '02',
                 title: 'Intent classified.',
-                body: 'Lex detects language and intent. BioMistral-7B queries verified RAG from WHO/MoHFW.',
+                body: 'Language auto-detected. OpenAI queries verified health knowledge from WHO and MoHFW sources.',
               },
               {
                 step: '03',
