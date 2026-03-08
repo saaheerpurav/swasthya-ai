@@ -6,7 +6,7 @@ import { SeverityBadge } from '../../components/SeverityBadge'
 import { RelativeTime } from '../../components/RelativeTime'
 import { EmptyState } from '../../components/EmptyState'
 import { REGIONS } from '../../constants/regions'
-import type { Alert, CreateAlertInput, Severity } from '../../types'
+import type { Alert, CreateAlertInput } from '../../types'
 
 const REGION_OPTIONS = REGIONS.map((r) => ({ value: r.code, label: `${r.name}, ${r.state}` }))
 
@@ -20,9 +20,6 @@ const EMPTY_FORM: CreateAlertInput & { active?: boolean } = {
   sourceUrl: '',
 }
 
-function severityColor(s: Severity) {
-  return s === 'critical' ? 'text-red-400' : s === 'high' ? 'text-orange-400' : s === 'medium' ? 'text-yellow-400' : 'text-green-400'
-}
 
 function AlertModal({
   initial,

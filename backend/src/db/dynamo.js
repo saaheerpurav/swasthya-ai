@@ -99,10 +99,10 @@ const deleteSession = async (token) => {
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 const createUser = async (user) => {
-  await docClient.send(new PutCommand({
-    TableName: T.users,
-    Item: { pk: user.userId, ...user },
-  }));
+  const item = { pk: user.userId, ...user };
+  // DynamoDB GSI on phoneNumber requires String — omit if null
+  if (item.phoneNumber == null) delete item.phoneNumber;
+  await docClient.send(new PutCommand({ TableName: T.users, Item: item }));
   return user;
 };
 

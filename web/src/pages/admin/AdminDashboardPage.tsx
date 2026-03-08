@@ -50,9 +50,9 @@ function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard title="Active Today" value={s?.activeUsersToday ?? '—'} icon={Activity} />
-        <StatCard title="Active (7d)" value={s?.activeUsers7d ?? (s as any)?.activeUsersWeek ?? '—'} icon={TrendingUp} />
+        <StatCard title="Active (7d)" value={(s as any)?.activeUsers7d ?? (s as any)?.activeUsersWeek ?? '—'} icon={TrendingUp} />
         <StatCard title="Total Queries" value={s?.totalQueries ?? '—'} icon={MessageCircle} />
-        <StatCard title="Avg Response" value={s ? `${s.avgResponseTime ?? '—'}ms` : '—'} icon={Clock} />
+        <StatCard title="Avg Response" value={s ? `${(s as any).avgResponseTime ?? '—'}ms` : '—'} icon={Clock} />
       </div>
 
       {/* Charts */}

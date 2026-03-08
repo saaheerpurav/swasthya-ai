@@ -40,16 +40,24 @@ router.get('/', (_req, res) => res.status(200).send('OK'));
 
 // POST /v1/webhooks/whatsapp
 router.post('/', verifyTwilio, async (req, res) => {
-  // Always reply 200 immediately so Twilio doesn't retry
-  res
-    .status(200)
-    .set('Content-Type', 'text/xml')
-    .send('<?xml version="1.0" encoding="UTF-8"?><Response/>');
+  const twimlReply = (text) => {
+    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return res
+      .status(200)
+      .set('Content-Type', 'text/xml')
+      .send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>${escaped}</Message></Response>`);
+  };
+
+  const twimlEmpty = () =>
+    res
+      .status(200)
+      .set('Content-Type', 'text/xml')
+      .send('<?xml version="1.0" encoding="UTF-8"?><Response/>');
 
   try {
     const { From, Body, NumMedia, MediaUrl0, MediaContentType0 } = req.body;
     const phone = (From || '').replace('whatsapp:', '');
-    if (!phone) return;
+    if (!phone) return twimlEmpty();
 
     // Get or auto-create user
     let user = await db.getUserByPhone(phone);
@@ -91,7 +99,7 @@ router.post('/', verifyTwilio, async (req, res) => {
         const imageBuffer = Buffer.from(await imageResp.arrayBuffer());
         const analysis = await analyzeImage(imageBuffer, user.preferredLanguage, Body || '');
 
-        responseText = [analysis.educationalInfo, '', '⚠️ ' + analysis.disclaimers[0]].join('\n');
+        responseText = analysis.educationalInfo;
         if (analysis.escalationRequired) {
           responseText = '🚨 Please seek immediate medical attention.\n\n' + responseText;
         }
@@ -102,14 +110,14 @@ router.post('/', verifyTwilio, async (req, res) => {
     } else {
       // Text message
       const message = (Body || '').trim();
-      if (!message) return;
+      if (!message) return twimlEmpty();
 
       const aiResponse = await generateHealthResponse({
         message,
         language: user.preferredLanguage,
       });
 
-      responseText = [aiResponse.content, '', '⚠️ ' + aiResponse.disclaimers[0]].join('\n');
+      responseText = aiResponse.content;
 
       await db.saveQuery({
         queryId: generateId('qry_'),
@@ -124,9 +132,10 @@ router.post('/', verifyTwilio, async (req, res) => {
       });
     }
 
-    await sendWhatsApp(phone, responseText);
+    return twimlReply(responseText);
   } catch (err) {
     console.error('[whatsapp] webhook error:', err);
+    return twimlReply('Sorry, something went wrong. Please try again or call 108 for emergencies.');
   }
 });
 

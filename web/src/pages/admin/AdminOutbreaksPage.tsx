@@ -6,7 +6,7 @@ import { SeverityBadge } from '../../components/SeverityBadge'
 import { RelativeTime } from '../../components/RelativeTime'
 import { EmptyState } from '../../components/EmptyState'
 import { REGIONS } from '../../constants/regions'
-import type { Outbreak, CreateOutbreakInput, Severity, Trend } from '../../types'
+import type { Outbreak, CreateOutbreakInput, Trend } from '../../types'
 
 const REGION_OPTIONS = REGIONS.map((r) => ({ value: r.code, label: `${r.name}, ${r.state}` }))
 

@@ -71,13 +71,7 @@ router.post('/', verifyTwilio, async (req, res) => {
     });
 
     // SMS: strip markdown, keep under 1500 chars
-    const responseText = [
-      aiResponse.content.replace(/[*_#`]/g, ''),
-      '',
-      'NOTE: ' + aiResponse.disclaimers[0],
-    ]
-      .join('\n')
-      .slice(0, 1500);
+    const responseText = aiResponse.content.replace(/[*_#`]/g, '').slice(0, 1500);
 
     await db.saveQuery({
       queryId: generateId('qry_'),

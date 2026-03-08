@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import { useHealthChat } from './useHealthChat'
 import type { Language } from './useHealthChat'
@@ -19,6 +19,12 @@ function LiveDemoWidget() {
   const [language, setLanguage] = useState<Language>('en')
   const { messages, loading, sendMessage } = useHealthChat(language)
   const [input, setInput] = useState('')
+  const messagesRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = messagesRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messages, loading])
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -64,7 +70,7 @@ function LiveDemoWidget() {
           </span>
         </div>
         <div className="grid gap-3">
-          <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+          <div ref={messagesRef} className="max-h-64 space-y-2 overflow-y-auto pr-1">
             {messages.map((m, idx) => {
               const emergency = m.role === 'assistant' && isEmergency(m.content)
               return (

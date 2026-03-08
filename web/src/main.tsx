@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import { bootstrapSession } from './lib/api'
 import './index.css'
+import './style.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {

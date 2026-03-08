@@ -70,12 +70,19 @@ export default function LandingPage() {
               Live
             </span>
           </div>
-          <nav className="flex items-center gap-5 text-xs">
+          <nav className="flex items-center gap-3 text-xs">
             <a href="/dashboard" className="text-slate-400 transition hover:text-slate-100">
               Dashboard
             </a>
             <a href="/admin" className="text-slate-400 transition hover:text-slate-100">
               Admin
+            </a>
+            <a
+              href="https://d24ycx7fjjtved.cloudfront.net/swasthya-ai.apk"
+              download
+              className="cta cta-secondary !py-1.5 !px-3.5 !text-xs"
+            >
+              ↓ Download App
             </a>
             <a
               href="https://wa.me/+14155238886?text=join%20many-tool"
@@ -124,6 +131,15 @@ export default function LandingPage() {
                 whileTap={{ scale: 0.97 }}
               >
                 Try on WhatsApp
+              </motion.a>
+              <motion.a
+                href="https://d24ycx7fjjtved.cloudfront.net/swasthya-ai.apk"
+                download
+                className="cta cta-secondary"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                ↓ Download App
               </motion.a>
               <motion.a
                 href="/dashboard"

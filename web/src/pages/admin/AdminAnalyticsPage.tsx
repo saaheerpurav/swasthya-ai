@@ -108,7 +108,7 @@ function AdminAnalyticsPage() {
             <YAxis tick={{ fontSize: 9, fill: '#6B7280' }} width={28} />
             <Tooltip contentStyle={{ backgroundColor: '#020617', borderColor: '#1F2937', fontSize: 10 }} />
             <Area type="monotone" dataKey="count" stroke="#22C55E" fill="#22C55E22" name="Queries" />
-            {queriesByDay[0]?.newUsers !== undefined && (
+            {(queriesByDay[0] as any)?.newUsers !== undefined && (
               <Area type="monotone" dataKey="newUsers" stroke="#3B82F6" fill="#3B82F622" name="New Users" />
             )}
           </AreaChart>
