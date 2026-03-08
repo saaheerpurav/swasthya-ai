@@ -2,7 +2,7 @@
 
 **Multilingual AI public health platform for rural and semi-urban India.**
 
-Built for the AWS Hackathon (AI for Bharat, Hack2Skill / YourStory) by **Team Neura Rangers**.
+Built for the AWS Hackathon (AI for Bharat, Hack2Skill) by **Team Neura Rangers**.
 
 SwasthyaAI delivers preventive health education, vaccination tracking, symptom guidance, and real-time health alerts through voice, WhatsApp, SMS, and a mobile app -- in English, Hindi, Kannada, and Telugu.
 
@@ -109,4 +109,4 @@ Mobile App, Web, WhatsApp, SMS, Voice
 
 ## Team
 
-**Neura Rangers** -- AWS Hackathon: AI for Bharat (Hack2Skill / YourStory), 2025
+**Neura Rangers** -- AWS Hackathon: AI for Bharat (Hack2Skill), 2026
